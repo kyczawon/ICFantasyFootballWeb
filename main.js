@@ -24,7 +24,7 @@ main.innerHTML=`
 let navArr=["Teams", "Players", "Tables and Fixtures"];
 for (let i=0; i < navArr.length; i++) {
 	let id = navArr[i].toLowerCase().split(' ').join('-');
-	let rightTable=$(`<table id="right-${id}"/>`);
+	let rightTable=$(`<table id="right-${id}" class = "table table-striped"/>`);
 	let leftDiv=$(`<div id="left-${id}"/>`);
 	let li=$(`<li id="nav-${id}"/>`);
 	if (i === 0) {
@@ -41,50 +41,74 @@ for (let i=0; i < navArr.length; i++) {
 	$("#nav-bar").append(li);
 }
 
-for (let i=0; i < 4; i++) {
+for (let i=0; i < 5; i++) {
 	$(`<div id="row-${i}" class="display-row"/>`).appendTo($("#left-teams"));
 }
-$(`<div id="row-4"/>`).appendTo($("#left-teams"));
 
 //set logo to nav-bar size
 $("#logo").height($("#nav-bar").height());
 
 //recieving teams from db and populating teams table
-let tableTeams=$("#right-teams");
 var teamsArr;
-$.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) => {
+$.get("../android_connect/teams.php", (data) => {
   teamsArr = data;
-	let index=0;
-	let row = $("<tr/>")
+	createTable(data, "#right-teams", (event) => populateTeam(event.currentTarget.id));
+  if (playersArr != null) {
+    populateTeam(firstTeamId);
+  }
+});
+
+var firstTeamId;
+var firstPlayerId;
+function createTable(data, id, callback = {}) {
+  parentTable = $(id);
+  let index=0;
+	let row = $("<tr/>");
+  var thead = $("<thead/>");
 	for (let key in data[0]) {
-		if (index > 0 && index < 6) {;
-			row.append($(`<th>${key}</th>`));
-			tableTeams.append(row);
+		if (index > 0 && (index < 6 || id !== "#right-teams")) { //or required to show only part of teams table
+			row.append($(`<th>${key.split('_').join(' ')}</th>`));
+			thead.append(row);
 		}
 		index++;
 	}
+  parentTable.append(thead);
+  var tbody = $("<tbody/>");
 	for (let i=0; i < data.length; i++) {
 		let obj=data[i];
 		row = $("<tr/>");
+    if (i === 0 && id === "#right-teams") {//make the first team on the list active
+      row.toggleClass("rowactive");
+      firstTeamId = obj[Object.keys(obj)[0]];
+      selectedRow = "#" + firstTeamId;
+    }
+    if (i === 0 && id === "#right-players") {//make the first team on the list active
+      row.toggleClass("rowactive");
+      firstPlayerId = obj[Object.keys(obj)[0]];
+      selectedRow = "#" + firstPlayerId;
+    }
 		index=0;
 		for (let key in obj) {
       if (index === 0) {
         row.attr('id', obj[key]);
       }
-			if (index > 0 && index < 6) {
+			if (index > 0 && (index < 6 || id !== "#right-teams")) {//or required to show only part of teams table
 				row.append($(`<td>${obj[key]}</td>`));
 			}
 			index++;
 		}
-    row.on('click', (event) => {
-      populateTeam(event.currentTarget.id);
+    row.on('click', (event) => callback(event)).on('click', (event) => {
+        $(selectedRow).removeClass("rowactive");
+        event.currentTarget.className += " rowactive";
+        selectedRow = "#" + event.currentTarget.id;
     });
-		tableTeams.append(row);
+		tbody.append(row);
 	}
-
-});
+  parentTable.append(tbody)
+}
 
 //populates the team with the selected team
+var selectedRow;
 function populateTeam(id) {
   let team = teamsArr.filter(el => el[Object.keys(el)[0]] === id)[0];
   console.log(team);
@@ -113,6 +137,40 @@ function populateTeam(id) {
   }
 }
 
+function populatePlayer(id) {
+  let player = playersArr.filter(el => el[Object.keys(el)[0]] === id)[0];
+  console.log(player);
+  $('#left-players-header').text(player["first_name"] + " " + player["last_name"]);
+  $('#left-players-sub-header').text(player["position"] + " in the " + getTeamString(player["team"]) + " team");
+  $('#left-players-info').html(`
+    Points: ${player["points"]}<br/>
+    Points This Week: ${player["points_week"]}<br/>
+    Apps: ${player["appearances"]}<br/>
+    Subs: ${player["sub_appearances"]}<br/>
+    Goals: ${player["goals"]}<br/>
+    Assists: ${player["assists"]}<br/>
+    MOTMs: ${player["motms"]}<br/>
+    Clean Sheets: ${player["clean_sheets"]}<br/>
+    Yellows: ${player["yellow_cards"]}<br/>
+    Red Cards: ${player["red_cards"]}<br/>
+    Own Goals: ${player["own_goals"]}<br/>`
+  );
+  $('#team-shirt').prop("src", `https://union.ic.ac.uk/acc/football/fantasy/images/shirt${player["team"]}.png`);
+}
+
+function getTeamString(num) {
+  switch (num) {
+    case 1:
+      return "1st";
+    case 2:
+      return "2nd";
+    case 3:
+      return "3rd";
+    default:
+      return num + "th";
+  }
+}
+
 function createPlayerDiv(playerId) {
   let player = playersArr.filter(el => el[Object.keys(el)[0]] === playerId)[0];
   let mdiv = $("<div/>").css("display", "inline-block").css("height", "inherit");
@@ -124,37 +182,18 @@ function createPlayerDiv(playerId) {
 
 
 //recieving players from db and populating players table
-let tablePlayers=$("#right-players");
 let playersArr;
 let currentTeam;
-$.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) => {
+$.get("../android_connect/players.php", (data) => {
 	playersArr = data;
-	let row=$("<tr/>")
-	let index=0;
-	for (let key in data[0]) {
-		if (index > 0) {
-			row.append($(`<th>${key.split('_').join(' ')}</th>`));
-			tablePlayers.append(row);
-		}
-		index++;
-	}
-	for (let i=0; i < data.length; i++) {
-		let obj=data[i];
-		row=$("<tr/>");
-		index=0;
-		for (let key in obj) {
-			if (index > 0) {
-				row.append($(`<td>${obj[key]}</td>`));
-			}
-			index++;
-		}
-		tablePlayers.append(row);
-	}
+	createTable(data, "#right-players", (event) => populatePlayer(event.currentTarget.id));
 	currentTeam = playersArr[0]["team"];
 	let url = "https://union.ic.ac.uk/acc/football/fantasy/images/shirt" + currentTeam + ".png";
 	console.log(url);
 	$('#team-shirt').prop("src", url);
-
+  if (teamsArr != null) {
+    populateTeam(firstTeamId);
+  }
 });
 
 //making tabs selected and appropriate content shown and hidden
@@ -179,6 +218,19 @@ for (let i = 0; i < array.length; i++) {
     selectedNav = "#" + array[i].id;
     resizeRows();
     addmarginRows();
+
+    $(selectedRow).removeClass("rowactive");
+    switch (shownRight) {
+      case "#right-teams":
+        populateTeam(firstTeamId);
+        selectedRow = "#" + firstTeamId;
+        break;
+      case "#right-players":
+        populatePlayer(firstPlayerId);
+        selectedRow = "#" + firstPlayerId;
+        break;
+    }
+    $(selectedRow).addClass("rowactive");
   });
 }
 
@@ -208,7 +260,7 @@ function addmarginRows() {
 	rows.css('margin-top', playerRowHeight*margFrac);
 	bench.css('margin-top', (benchHeight - (playerRowHeight - playerRowHeight*margFrac))/4 );
 	bench.css('margin-bottom', (benchHeight - (playerRowHeight - playerRowHeight*margFrac))/4 );
-	
+
 }
 
 resizeRows();
@@ -220,6 +272,7 @@ $(window).resize( function(){
 
 // splitting left-players into two colums
 $('#left-players').append($('<h3 id="left-players-header">Player Name</h3>'));
+$('#left-players').append($('<h4 id="left-players-sub-header">Player position</h4>'));
 $('#left-players').append($('<div id="left-players-image" class="col-xs-2"></div>').css('width', '50%'));
 $('#left-players-image').append($('<img id = "team-shirt">'));
 $('#left-players').append($('<div id="left-players-info" class="col-xs-2">Placeholder Info</div>').css('width', '50%'));
