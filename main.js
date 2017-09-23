@@ -51,9 +51,11 @@ $("#logo").height($("#nav-bar").height());
 
 //recieving teams from db and populating teams table
 let tableTeams=$("#right-teams");
+let teamArr;
 $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) => {
+  teamsArr = data;
 	let index=0;
-	let row=$("<tr/>")
+	let row = $("<tr/>")
 	for (let key in data[0]) {
 		if (index > 0 && index < 6) {;
 			row.append($(`<th>${key}</th>`));
@@ -66,9 +68,15 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 		row=$("<tr/>");
 		index=0;
 		for (let key in obj) {
+      if (index === 0) {
+        row.attr('id', obj[key]);
+      }
 			if (index > 0 && index < 6) {
 				row.append($(`<td>${obj[key]}</td>`));
 			}
+      row.on('click', () => {
+          console.log(row.attr('id'));
+      });
 			index++;
 		}
 		tableTeams.append(row);
@@ -79,6 +87,7 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 //recieving players from db and populating players table
 let tablePlayers=$("#right-players");
 let playersArr;
+let currentTeam;
 $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) => {
 	playersArr = data;
 	let row=$("<tr/>")
@@ -102,13 +111,17 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) 
 		}
 		tablePlayers.append(row);
 	}
+	currentTeam = playersArr[0]["team"];
+	let url = "https://union.ic.ac.uk/acc/football/fantasy/images/shirt" + currentTeam + ".png";
+	console.log(url);
+	$('#team-shirt').prop("src", url);
 
 });
 
 //making tabs selected and appropriate content shown and hidden
-var selectedNav = "nav-teams";
-var shownRight = "right-teams";
-var shownLeft = "left-teams";
+var selectedNav = "#nav-teams";
+var shownRight = "#right-teams";
+var shownLeft = "#left-teams";
 var array = Array.from($('#nav-bar').children());
 var arrayTables = Array.from($('.right'));
 var arrayDivsLeft = Array.from($('.left'));
@@ -116,32 +129,37 @@ for (let i = 0; i < array.length; i++) {
   array[i].addEventListener('click', () => {
 		var mTable = arrayTables[i];
 		var mDiv = $('.left').eq(i);
-		console.log(mDiv);
-		$("#" + shownLeft).hide();
-		$("#" + shownRight).removeClass("rightactive");
-    $("#" + selectedNav).removeClass("active");
+		// console.log(mDiv);
+		$(shownLeft).hide();
+		$(shownRight).removeClass("rightactive");
+    $(selectedNav).removeClass("active");
     mTable.className += " rightactive";
     array[i].className += " active";
 		mDiv.show();
-    shownLeft = mDiv.attr("id");
-    shownRight = mTable.id;
-    selectedNav = array[i].id;
+    shownLeft = "#" + mDiv.attr("id");
+    shownRight = "#" + mTable.id;
+    selectedNav = "#" + array[i].id;
+    resizeRows();
+    addPaddingRows();
   });
 }
 
 // Resizing left-teams and rows dynamically with padding
 
 function resizeRows() {
-	let rows = $('.display-row');
-	let bench  = $('#row-4');
-	rows.css('padding-bottom', 0);
-	rows.css('padding-top', 0);
-	bench.css('padding-bottom', 0);
-	bench.css('padding-top', 0);
-	$('#left-teams').height($('#left-teams').width()*1.347);
-	rows.height($('#left-teams').width()*1.031/4);
-	bench.height($('#left-teams').width()*0.316);
-}	
+	if (shownLeft === "#left-teams") {
+		let rows = $('.display-row');
+		let bench  = $('#row-4');
+		rows.css('padding-bottom', 0);
+		rows.css('padding-top', 0);
+		bench.css('padding-bottom', 0);
+		bench.css('padding-top', 0);
+		$(shownLeft).height($(shownLeft).width()*1.347);
+		rows.height($(shownLeft).width()*1.031/4);
+		bench.height($(shownLeft).width()*0.316);
+	}
+	
+}
 function addPaddingRows() {
 	let rows = $('.display-row');
 	let bench  = $('#row-4');
@@ -151,13 +169,13 @@ function addPaddingRows() {
 	bench.css('padding-top', 0);
 	let padFrac = 0.1;
 	let playerRowHeight = rows.height()
-	console.log(playerRowHeight);
+	// console.log(playerRowHeight);
 	let benchHeight = bench.height();
 	rows.css('padding-bottom', playerRowHeight*padFrac);
 	rows.css('padding-top', playerRowHeight*padFrac);
 	bench.css('padding-top', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2 );
 	bench.css('padding-bottom', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2);
-	console.log(rows.height());
+	// console.log(rows.height());
 }
 
 resizeRows();
@@ -166,3 +184,17 @@ $(window).resize( function(){
 	resizeRows();
 	addPaddingRows();
 });
+
+// splitting left-players into two colums
+$('#left-players').append($('<h3 id="left-players-header">Player Name</h3>'));
+$('#left-players').append($('<div id="left-players-image" class="col-xs-2"></div>').css('width', '50%'));
+$('#left-players-image').append($('<img id = "team-shirt">'));
+$('#left-players').append($('<div id="left-players-info" class="col-xs-2">Placeholder Info</div>').css('width', '50%'));
+
+// fill left-players-image with currently active player
+
+function changePlayerImage(currentTeam) {
+	let url = "https://union.ic.ac.uk/acc/football/fantasy/images/shirt" + currentTeam + ".png";
+	$('#team-shirt').prop("src", url).prop('width', '100%');
+}
+// changePlayerImage(currentTeam);
