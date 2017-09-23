@@ -74,9 +74,6 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 			if (index > 0 && index < 6) {
 				row.append($(`<td>${obj[key]}</td>`));
 			}
-      row.on('click', () => {
-          console.log(row.attr('id'));
-      });
 			index++;
 		}
     row.on('click', (event) => {
@@ -87,16 +84,42 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 
 });
 
+//populates the team with the selected team
 function populateTeam(id) {
   let team = teamsArr.filter(el => el[Object.keys(el)[0]] === id)[0];
-  let defNum = team["def_num"];
-  let row1 = $("#row-1");
-  for (let i = 0; i < defNum; i++) {
-    let mdiv = $("<div/>").css("display", "inline-block").css("height", "inherit");
-    mdiv.append($("<img src =\"https://union.ic.ac.uk/acc/football/fantasy/images/shirt.png\"/>").css("height", "70%"))
-    .append($("<div>\"text\"</div>").css("height", "15%")).append($("<div>\"text\"</div>").css("height", "15%"));
-    row1.append(mdiv);
+  console.log(team);
+  let def_num = parseInt(team["def_num"]);
+  let mid_num = parseInt(team["mid_num"]);
+  let row0 = $("#row-0").html("");
+  let row1 = $("#row-1").html("");
+  let row2 = $("#row-2").html("");
+  let row3 = $("#row-3").html("");
+  let row4 = $("#row-4").html("");
+  row0.append(createPlayerDiv(team["goal"]));
+  for (let i = 0; i < 10; i++) {
+    let playerId = team[`player${i+1}`];
+    if (i < def_num) {
+      row1.append(createPlayerDiv(playerId));
+    } else if (i < def_num + mid_num) {
+      row2.append(createPlayerDiv(playerId));
+    } else {
+      row3.append(createPlayerDiv(playerId));
+    }
   }
+  row4.append(createPlayerDiv(team["sub_goal"]));
+  for (let i = 0; i < 4; i++) {
+    let playerId = team[`sub${i+1}`];
+    row4.append(createPlayerDiv(playerId));
+  }
+}
+
+function createPlayerDiv(playerId) {
+  let player = playersArr.filter(el => el[Object.keys(el)[0]] === playerId)[0];
+  let mdiv = $("<div/>").css("display", "inline-block").css("height", "inherit");
+  mdiv.append($(`<img src ="https://union.ic.ac.uk/acc/football/fantasy/images/shirt${player["team"]}.png"/>`).toggleClass("player-image"))
+  .append($(`<div>${player["last_name"]}</div>`).toggleClass("player-text")).append($(`<div>${player["points_week"]}</div>`).toggleClass("player-text"));
+  mdiv.toggleClass("space-evenly");
+  return mdiv;
 }
 
 
@@ -170,7 +193,7 @@ function resizeRows() {
 		rows.height($(shownLeft).width()*1.031/4*1/1.2);
 		bench.height($(shownLeft).width()*0.316*1/1.2);
 	}
-	
+
 }
 
 function addmarginRows() {
