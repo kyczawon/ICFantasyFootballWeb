@@ -32,9 +32,11 @@ for (let i=0; i < navArr.length; i++) {
 	$("#nav-bar").append(li);
 }
 
-for (let i=0; i < 5; i++) {
+// Creating team display rows
+for (let i=0; i < 4; i++) {
 	$(`<div id="row-${i}" class="display-row"/>`).appendTo($("#pitch"));
 }
+$(`<div id="row-4"/>`).appendTo($("#pitch"));
 
 //set logo to nav-bar size
 $("#logo").height($("#nav-bar").height());
@@ -112,15 +114,46 @@ for (let i = 0; i < array.length; i++) {
   });
 }
 
-// Resizing pitch and rows dynamically
-$('#pitch').height($('#pitch').width()*1.347);
-$('.display-row').height($('#pitch').height()/5);
+// Resizing pitch and rows dynamically with padding
 
 
-
-$(window).resize( function(){
-	// console.log('resize')
+function resizeRows() {
+	let rows = $('.display-row');
+	let bench  = $('#row-4');
+	rows.css('padding-bottom', 0);
+	rows.css('padding-top', 0);
+	bench.css('padding-bottom', 0);
+	bench.css('padding-top', 0);
 	$('#pitch').height($('#pitch').width()*1.347);
-	$('.display-row').height($('#pitch').height()/5);
-	
-})
+	rows.height($('#pitch').width()*1.031/4);
+	bench.height($('#pitch').width()*0.316);
+}	
+function addPaddingRows() {
+	let rows = $('.display-row');
+	let bench  = $('#row-4');
+	rows.css('padding-bottom', 0);
+	rows.css('padding-top', 0);
+	bench.css('padding-bottom', 0);
+	bench.css('padding-top', 0);
+	let padFrac = 0.1;
+	let playerRowHeight = rows.height()
+	console.log(playerRowHeight);
+	let benchHeight = bench.height();
+	rows.css('padding-bottom', playerRowHeight*padFrac);
+	rows.css('padding-top', playerRowHeight*padFrac);
+	bench.css('padding-top', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2 );
+	bench.css('padding-bottom', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2);
+	console.log(rows.height());
+}
+
+resizeRows();
+addPaddingRows();
+$(window).resize( function(){
+	resizeRows();
+	addPaddingRows();
+});
+
+
+
+
+
