@@ -8,7 +8,7 @@ main.innerHTML=`
 		    <ul id="nav-bar" class="nav navbar-nav">
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
-		      <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+		      <li><a href="register.html"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
 		      <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		    </ul>
 		</div>
@@ -187,13 +187,11 @@ function resizeRows() {
 	if (shownLeft === "#left-teams") {
 		let rows = $('.display-row');
 		let bench  = $('#row-4');
-		rows.css('padding-bottom', 0);
-		rows.css('padding-top', 0);
-		bench.css('padding-bottom', 0);
-		bench.css('padding-top', 0);
+		rows.css('margin-top', 0);
+		bench.css('margin-top', 0);
 		$(shownLeft).height($(shownLeft).width()*1.347);
-		rows.height($(shownLeft).width()*1.031/4);
-		bench.height($(shownLeft).width()*0.316);
+		rows.height($(shownLeft).width()*1.031/4*1/1.2);
+		bench.height($(shownLeft).width()*0.316*1/1.2);
 	}
 
 }
@@ -201,17 +199,16 @@ function resizeRows() {
 function addmarginRows() {
 	let rows = $('.display-row');
 	let bench  = $('#row-4');
-	rows.css('margin-bottom', 0);
 	rows.css('margin-top', 0);
-	bench.css('margin-bottom', 0);
 	bench.css('margin-top', 0);
-	let padFrac = 0.1;
-	let playerRowHeight = rows.height()
+	bench.css('margin-bottom', 0);
+	let margFrac = 0.2;
+	let playerRowHeight = rows.height();
 	let benchHeight = bench.height();
-	rows.css('margin-bottom', playerRowHeight*padFrac);
-	rows.css('margin-top', playerRowHeight*padFrac);
-	bench.css('margin-top', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2 );
-	bench.css('margin-bottom', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2);
+	rows.css('margin-top', playerRowHeight*margFrac);
+	bench.css('margin-top', (benchHeight - (playerRowHeight - playerRowHeight*margFrac))/4 );
+	bench.css('margin-bottom', (benchHeight - (playerRowHeight - playerRowHeight*margFrac))/4 );
+	
 }
 
 resizeRows();
