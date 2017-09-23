@@ -1,0 +1,42 @@
+#pitch {
+  background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/pitch_web.jpg");
+  background-size: 100% auto;
+  width: 100%;
+  display: inline-block;
+}
+
+
+#left-body {
+  /* width: 100%; */
+}
+
+.table {
+  display: none;
+}
+
+.rightactive {
+  display: inherit;
+}
+
+
+#right-body{
+  right: 0px;
+  position: absolute;
+  /* width: 100%; */
+  overflow: scroll;
+}
+
+.display-row {
+  height: 20%;
+  width: 100%;
+}
+
+
+#body {
+  width: 100%;
+  display: table;
+}
+
+#main {
+  color: blue;
+}
