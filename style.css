@@ -6,38 +6,41 @@
 }
 
 #left-players {
-  /* background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/shirt.png"); */
-}
-
-
-#left-body {
-  /* width: 100%; */
+  background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/shirt.png");
 }
 
 .right, .left {
   display: none;
 }
 
-
-
-
 .rightactive, .leftactive{
   display: inherit;
 }
 
-
 #right-body{
   right: 0px;
   position: absolute;
-  /* width: 100%; */
   overflow: scroll;
 }
 
 .display-row {
-  height: 20%;
-  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
 }
 
+.player-text {
+  height: 15%;
+  width: 100%;
+  text-align: center;
+}
+
+.player-image {
+  height: 70%;
+}
+
+.space-evenly {
+  vertical-align: middle;
+}
 
 #body {
   width: 100%;
