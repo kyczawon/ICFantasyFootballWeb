@@ -1,8 +1,12 @@
-#pitch {
+#left-teams {
   background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/pitch_web.jpg");
   background-size: 100% auto;
   width: 100%;
   display: inline-block;
+}
+
+#left-players {
+  background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/shirt.png");
 }
 
 
@@ -10,11 +14,14 @@
   /* width: 100%; */
 }
 
-.table {
+.right, .left {
   display: none;
 }
 
-.rightactive {
+
+
+
+.rightactive, .leftactive{
   display: inherit;
 }
 

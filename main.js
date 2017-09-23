@@ -15,32 +15,41 @@ main.innerHTML=`
 	</div>
 </nav>
 <div id="body">
-<div id="left-body" class="col-sm-6"><div id="pitch" class = "leftactive"></div></div>
-<div id="right-body" class="col-sm-6"><table id="teams" class="table rightactive"/><table id="players" class="table"/></div>
+<div id="left-body" class="col-sm-4"></div>
+<div id="right-body" class="col-sm-8"></div>
 `;
 
 
-//populating  the navigation bar
+//populating the navigation bar
 let navArr=["Teams", "Players", "Tables and Fixtures"];
 for (let i=0; i < navArr.length; i++) {
-	let li=$(`<li id="nav-${navArr[i].toLowerCase().split(' ').join('-')}"/>`);
+	let id = navArr[i].toLowerCase().split(' ').join('-');
+	let rightTable=$(`<table id="right-${id}"/>`);
+	let leftDiv=$(`<div id="left-${id}"/>`);
+	let li=$(`<li id="nav-${id}"/>`);
 	if (i === 0) {
+		leftDiv.addClass("leftactive");
+		rightTable.addClass("rightactive");
 		li.addClass("active");
 	}
+	leftDiv.addClass("left");
+	$("#left-body").append(leftDiv);
+	rightTable.addClass("right");
+	$("#right-body").append(rightTable);
 	let a=$("<a/>").text(navArr[i]);
 	li.append(a);
 	$("#nav-bar").append(li);
 }
 
 for (let i=0; i < 5; i++) {
-	$(`<div id="row-${i}" class="display-row"/>`).appendTo($("#pitch"));
+	$(`<div id="row-${i}" class="display-row"/>`).appendTo($("#left-teams"));
 }
 
 //set logo to nav-bar size
 $("#logo").height($("#nav-bar").height());
 
 //recieving teams from db and populating teams table
-let tableTeams=$("#teams");
+let tableTeams=$("#right-teams");
 $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) => {
 	let index=0;
 	let row=$("<tr/>")
@@ -67,7 +76,7 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 });
 
 //recieving players from db and populating players table
-let tablePlayers=$("#players");
+let tablePlayers=$("#right-players");
 let playersArr;
 $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) => {
 	playersArr = data;
@@ -97,30 +106,37 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) 
 
 //making tabs selected and appropriate content shown and hidden
 var selectedNav = "nav-teams";
-var shownTable = "teams";
+var shownRight = "right-teams";
+var shownLeft = "left-teams";
 var array = Array.from($('#nav-bar').children());
-var arrayTables = Array.from($('.table'));
+var arrayTables = Array.from($('.right'));
+var arrayDivsLeft = Array.from($('.left'));
 for (let i = 0; i < array.length; i++) {
   array[i].addEventListener('click', () => {
 		var mTable = arrayTables[i];
-		$("#" + shownTable).removeClass("rightactive");
+		var mDiv = $('.left').eq(i);
+		console.log(mDiv);
+		$("#" + shownLeft).hide();
+		$("#" + shownRight).removeClass("rightactive");
     $("#" + selectedNav).removeClass("active");
-    array[i].className += " active";
     mTable.className += " rightactive";
+    array[i].className += " active";
+		mDiv.show();
+    shownLeft = mDiv.attr("id");
+    shownRight = mTable.id;
     selectedNav = array[i].id;
-    shownTable = mTable.id;
   });
 }
 
-// Resizing pitch and rows dynamically
-$('#pitch').height($('#pitch').width()*1.347);
-$('.display-row').height($('#pitch').height()/5);
+// Resizing left-teams and rows dynamically
+$('.left').height($('.left').width()*1.347);
+$('.display-row').height($('.left').height()/5);
 
 
 
 $(window).resize( function(){
 	// console.log('resize')
-	$('#pitch').height($('#pitch').width()*1.347);
-	$('.display-row').height($('#pitch').height()/5);
-	
+	$('.left').height($('.left').width()*1.347);
+	$('.display-row').height($('.left').height()/5);
+
 })
