@@ -74,6 +74,9 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/teams.php", (data) =>
 			if (index > 0 && index < 6) {
 				row.append($(`<td>${obj[key]}</td>`));
 			}
+      row.on('click', () => {
+          console.log(row.attr('id'));
+      });
 			index++;
 		}
     row.on('click', (event) => {
@@ -100,6 +103,7 @@ function populateTeam(id) {
 //recieving players from db and populating players table
 let tablePlayers=$("#right-players");
 let playersArr;
+let currentTeam;
 $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) => {
 	playersArr = data;
 	let row=$("<tr/>")
@@ -123,6 +127,10 @@ $.get("https://union.ic.ac.uk/acc/football/android_connect/players.php", (data) 
 		}
 		tablePlayers.append(row);
 	}
+	currentTeam = playersArr[0]["team"];
+	let url = "https://union.ic.ac.uk/acc/football/fantasy/images/shirt" + currentTeam + ".png";
+	console.log(url);
+	$('#team-shirt').prop("src", url);
 
 });
 
@@ -137,7 +145,6 @@ for (let i = 0; i < array.length; i++) {
   array[i].addEventListener('click', () => {
 		var mTable = arrayTables[i];
 		var mDiv = $('.left').eq(i);
-		console.log(mDiv);
 		$(shownLeft).hide();
 		$(shownRight).removeClass("rightactive");
     $(selectedNav).removeClass("active");
@@ -153,18 +160,21 @@ for (let i = 0; i < array.length; i++) {
 }
 
 // Resizing left-teams and rows dynamically with margin
-
 function resizeRows() {
-	let rows = $('.display-row');
-	let bench  = $('#row-4');
-	rows.css('margin-bottom', 0);
-	rows.css('margin-top', 0);
-	bench.css('margin-bottom', 0);
-	bench.css('margin-top', 0);
-	$(shownLeft).height($(shownLeft).width()*1.347);
-	rows.height($(shownLeft).width()*1.031/4);
-	bench.height($(shownLeft).width()*0.316);
+	if (shownLeft === "#left-teams") {
+		let rows = $('.display-row');
+		let bench  = $('#row-4');
+		rows.css('padding-bottom', 0);
+		rows.css('padding-top', 0);
+		bench.css('padding-bottom', 0);
+		bench.css('padding-top', 0);
+		$(shownLeft).height($(shownLeft).width()*1.347);
+		rows.height($(shownLeft).width()*1.031/4);
+		bench.height($(shownLeft).width()*0.316);
+	}
+	
 }
+
 function addmarginRows() {
 	let rows = $('.display-row');
 	let bench  = $('#row-4');
@@ -174,13 +184,12 @@ function addmarginRows() {
 	bench.css('margin-top', 0);
 	let padFrac = 0.1;
 	let playerRowHeight = rows.height()
-	console.log(playerRowHeight);
+	// console.log(playerRowHeight);
 	let benchHeight = bench.height();
 	rows.css('margin-bottom', playerRowHeight*padFrac);
 	rows.css('margin-top', playerRowHeight*padFrac);
 	bench.css('margin-top', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2 );
 	bench.css('margin-bottom', (benchHeight - (playerRowHeight - 2*playerRowHeight*padFrac))/2);
-	console.log(rows.height());
 }
 
 resizeRows();
@@ -189,3 +198,15 @@ $(window).resize( function(){
 	resizeRows();
 	addmarginRows();
 });
+
+// splitting left-players into two colums
+$('#left-players').append($('<h3 id="left-players-header">Player Name</h3>'));
+$('#left-players').append($('<div id="left-players-image" class="col-xs-2"></div>').css('width', '50%'));
+$('#left-players-image').append($('<img id = "team-shirt">'));
+$('#left-players').append($('<div id="left-players-info" class="col-xs-2">Placeholder Info</div>').css('width', '50%'));
+
+// fill left-players-image with currently active player
+function changePlayerImage(currentTeam) {
+	let url = "https://union.ic.ac.uk/acc/football/fantasy/images/shirt" + currentTeam + ".png";
+	$('#team-shirt').prop("src", url).prop('width', '100%');
+}
