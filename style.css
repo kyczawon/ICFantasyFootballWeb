@@ -1,4 +1,4 @@
-#left-teams {
+#left-teams,  #left-myteam {
   background-image: url("https://union.ic.ac.uk/acc/football/fantasy/images/pitch_web.jpg");
   background-size: 100% auto;
   width: 100%;
@@ -26,20 +26,21 @@
 
 .player-text {
   height: 15%;
-  width: 100%;
+  width: fit-content;
   text-align: center;
   background-color:#1B5E20;
   color: white;
   font-weight: bold;
+  margin: auto;
 }
 
 .player-image {
   height: 70%;
+  background-size: auto 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
-.space-evenly {
-  vertical-align: middle;
-}
 
 #body {
   width: 100%;
@@ -57,4 +58,40 @@ tbody tr:hover {
 .rowactive {
   background-color: #1976d2 !important;
   color: white !important;
+}
+
+button {
+    background-color: #004ba0;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    border-radius: 5px;
+}
+
+/* Format error message */
+.error {
+    width:80%;
+    height:20px;
+    height:auto;
+    position:absolute;
+    left:10%;
+    /* margin-left:-100px; */
+    bottom:10px;
+    background-color: #383838;
+    color: #F0F0F0;
+    font-family: Calibri;
+    font-size: 20px;
+    padding:10px;
+    text-align:center;
+    border-radius: 2px;
+    -webkit-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+    -moz-box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+    box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
+}
+
+.player-selected {
+  background-color: rgba(255,0,0, 0.4)
 }
